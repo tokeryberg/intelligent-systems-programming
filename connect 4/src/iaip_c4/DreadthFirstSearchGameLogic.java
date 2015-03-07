@@ -21,8 +21,8 @@ public class DreadthFirstSearchGameLogic implements IGameLogic {
 		this.round = 0;
 		player1Win = new BitSet(8);
 		player2Win = new BitSet(8);
-		player1Win.set(0,8);
-		player2Win.set(0,8);
+		player1Win.set(0, 8);
+		player2Win.set(0, 8);
 		player2Win.flip(1);
 		player2Win.flip(3);
 		player2Win.flip(5);
@@ -80,27 +80,45 @@ public class DreadthFirstSearchGameLogic implements IGameLogic {
 
 	@Override
 	public Winner gameFinished() {
-		if(round > 6) {
-			checkHorizontal();
-			//checkVertical();
-			//checkDiagonal();
+		int winner = 0;
+		if (round > 6) {
+			// checkDraw();
+			winner = checkHorizontal();
+			if (winner == 0) {
+				// winner = checkVertical();
+				if (winner == 0) {
+					// winner = checkDiagonal();
+				}
+			}
+			;
 		}
 		// TODO Auto-generated method stub
 		// if horizontal
 		// if vertical
 		// if diagonal x 2
+		if (winner == 1) {
+			return Winner.PLAYER1;
+		} else if (winner == 2) {
+			return Winner.PLAYER2;
+		}
 		return Winner.NOT_FINISHED;
 	}
 
-	private int checkHorizontal(){
-		for (int row = rows-1; row < 0; row--) {
-			for (int column = 0; column < columns; column++) {
-				if(board[row].get(column*2)) {
-					//board[row].get(column*2, column*2+8).and(PLAYER1);;
+	private int checkHorizontal() {
+		for (int row = rows - 1; row < 0; row--) {
+			for (int column = 4; column < columns; column++) {
+				if (board[row].get(column * 2)) {
+					BitSet result = board[row].get((column - 4) * 2,
+							column * 2 + 2);
+					result.and(player1Win);
+					if (result == player1Win) {
+						return 1;
+					} else if (result == player2Win) {
+						return 2;
+					}
 				}
 			}
 		}
-		//if (startIn)
 		return 0;
 	}
 
