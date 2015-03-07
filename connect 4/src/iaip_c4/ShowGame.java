@@ -20,7 +20,7 @@ import java.lang.reflect.*;
 public class ShowGame {
 
 	public static String HUMAN_CMD = "human";
-
+ 
 	/**
 	 * Valid arguments: player1_logic player2_logic cols rows using the name
 	 * "human" in one of the logics will activate the default human agent
