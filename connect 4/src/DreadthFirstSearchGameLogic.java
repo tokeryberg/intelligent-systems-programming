@@ -1,4 +1,3 @@
-package iaip_c4;
 
 import java.util.BitSet;
 import java.util.Random;
@@ -52,7 +51,7 @@ public class DreadthFirstSearchGameLogic implements IGameLogic {
 				// 1)
 				board[i].set(column * BIT_SEQUENCE_LENGTH, column
 						* BIT_SEQUENCE_LENGTH + playerID);
-				System.out.println(round);
+				System.out.println("Round " + round);
 				round++;
 				break;
 			}
@@ -86,7 +85,7 @@ public class DreadthFirstSearchGameLogic implements IGameLogic {
 			// checkDraw();
 			winner = checkHorizontal();
 			if (winner == 0) {
-				// winner = checkVertical();
+				winner = checkVertical();
 				if (winner == 0) {
 					// winner = checkDiagonal();
 				}
@@ -104,17 +103,73 @@ public class DreadthFirstSearchGameLogic implements IGameLogic {
 		}
 		return Winner.NOT_FINISHED;
 	}
+	
+	private int checkVertical(){
+		
+		for (int column = 0 ; column < columns; column++) {
+			for (int row = rows - 4; rows >= 0; row--) {
+				System.out.println("row " + row);
+				if (board[row].get(column * 2)) {
+					BitSet result = new BitSet(8);
+
+					//result.and(player1Win); 
+				System.out.println(result.length());
+				System.out.println(result.length()/2);
+					for (int i = 0; i < result.length()/ 2; i++) {
+						System.out.println(i);
+						if(!board[row + i].get(column * 2)){
+							break;
+						}
+						result.set(i*2);
+						if(board[row+i].get(column*2+1)){
+							result.set(i*2+1);
+						}
+					}
+					System.out.println(result);
+					
+					
+					
+					/*	
+					Boolean[] cv = new Boolean[8];
+					cv[0] = board[row].get((column) * 2);
+					cv[1] = board[row].get((column) * 2 + 2); 
+					cv[2] = board[row+1].get((column) * 2);
+					cv[3] = board[row+1].get(column * 2 + 2);
+					cv[4] = board[row+2].get((column) * 2);				
+					cv[5] = board[row+2].get((column) * 2 + 2);
+					cv[6] = board[row+3].get((column) * 2);		
+					cv[7] = board[row+3].get((column) * 2 + 2);		  
+							  
+					for (int i = 0; i < cv.length; i++) {
+						System.out.print(cv[i] +" ");
+					}
+					*/
+					/*
+					System.out.println(result.toString());
+					if (result.equals(player1Win)){
+						return 2;
+					} else if (result.equals(player2Win)) {
+						return 1;
+					}*/
+				} else {
+					break;
+				}
+			}
+		}
+		return 0;
+	}
 
 	private int checkHorizontal() {
-		for (int row = rows - 1; row < 0; row--) {
-			for (int column = 4; column < columns; column++) {
+		for (int row = rows - 1; row >= 0; row--) {
+			for (int column = 3; column < columns; column++) {
 				if (board[row].get(column * 2)) {
-					BitSet result = board[row].get((column - 4) * 2,
+					BitSet result = board[row].get((column - 3) * 2,
 							column * 2 + 2);
-					if (result == player1Win) {
-						return 1;
-					} else if (result == player2Win) {
+					result.and(player1Win);
+					if (result.equals(player1Win)){
 						return 2;
+					} else if (result.equals(player2Win)) {
+						return 1;
 					}
 				}
 			}
