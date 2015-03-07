@@ -52,6 +52,7 @@ public class DreadthFirstSearchGameLogic implements IGameLogic {
 				// 1)
 				board[i].set(column * BIT_SEQUENCE_LENGTH, column
 						* BIT_SEQUENCE_LENGTH + playerID);
+				System.out.println(round);
 				round++;
 				break;
 			}
@@ -110,7 +111,6 @@ public class DreadthFirstSearchGameLogic implements IGameLogic {
 				if (board[row].get(column * 2)) {
 					BitSet result = board[row].get((column - 4) * 2,
 							column * 2 + 2);
-					result.and(player1Win);
 					if (result == player1Win) {
 						return 1;
 					} else if (result == player2Win) {
