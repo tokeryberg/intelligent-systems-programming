@@ -1,4 +1,4 @@
-package iaip_c4;
+
 
 import java.util.BitSet;
 import java.util.Random;
@@ -52,6 +52,7 @@ public class DreadthFirstSearchGameLogic implements IGameLogic {
 				// 1)
 				board[i].set(column * BIT_SEQUENCE_LENGTH, column
 						* BIT_SEQUENCE_LENGTH + playerID);
+				System.out.println(round);
 				round++;
 				break;
 			}

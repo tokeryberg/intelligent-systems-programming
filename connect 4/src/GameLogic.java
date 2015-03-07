@@ -1,4 +1,3 @@
-package iaip_c4;
 
 public class GameLogic implements IGameLogic {
     private int x = 0;
