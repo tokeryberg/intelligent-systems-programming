@@ -4,31 +4,37 @@ import java.util.BitSet;
 import java.util.Random;
 
 public class DreadthFirstSearchGameLogic implements IGameLogic {
-	private int x = 0;
-	private int y = 0;
-	private int playerID;
+	private int player;
 	private int columns;
 	private int rows;
+	private int round;
 	private static BitSet[] board;
 	private final int BIT_SEQUENCE_LENGTH = 2;
+	private BitSet player1Win, player2Win;
 
 	@Override
 	public void initializeGame(int columns, int rows, int player) {
 		// TODO Auto-generated method stub
-		this.x = x;
-		this.y = y;
 		this.columns = columns;
 		this.rows = rows;
-		this.playerID = playerID;
+		this.player = player;
+		this.round = 0;
+		player1Win = new BitSet(8);
+		player2Win = new BitSet(8);
+		player1Win.set(0,8);
+		player2Win.set(0,8);
+		player2Win.flip(1);
+		player2Win.flip(3);
+		player2Win.flip(5);
+		player2Win.flip(7);
 		System.out.println("X - " + columns);
 		System.out.println("Y - " + rows);
 
 		makeGameBoard(rows, columns);
 		printBoard();
-
 	}
 
-	public static void makeGameBoard(int rows, int columns) {
+	private static void makeGameBoard(int rows, int columns) {
 		board = new BitSet[rows];
 		for (int i = 0; i < board.length; i++) {
 			board[i] = new BitSet(columns * 2);
@@ -46,13 +52,14 @@ public class DreadthFirstSearchGameLogic implements IGameLogic {
 				// 1)
 				board[i].set(column * BIT_SEQUENCE_LENGTH, column
 						* BIT_SEQUENCE_LENGTH + playerID);
+				round++;
 				break;
 			}
 		}
 		printBoard();
 
 		System.out.println(column);
-		System.out.println(playerID);
+		System.out.println(player);
 	}
 
 	public int getCell(int row, int column) {
@@ -73,8 +80,28 @@ public class DreadthFirstSearchGameLogic implements IGameLogic {
 
 	@Override
 	public Winner gameFinished() {
+		if(round > 6) {
+			checkHorizontal();
+			//checkVertical();
+			//checkDiagonal();
+		}
 		// TODO Auto-generated method stub
+		// if horizontal
+		// if vertical
+		// if diagonal x 2
 		return Winner.NOT_FINISHED;
+	}
+
+	private int checkHorizontal(){
+		for (int row = rows-1; row < 0; row--) {
+			for (int column = 0; column < columns; column++) {
+				if(board[row].get(column*2)) {
+					//board[row].get(column*2, column*2+8).and(PLAYER1);;
+				}
+			}
+		}
+		//if (startIn)
+		return 0;
 	}
 
 	public int doMiniMax(BitSet board[]) {
