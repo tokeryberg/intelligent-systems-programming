@@ -2,7 +2,7 @@ import java.util.BitSet;
 import java.util.Random;
 
 public class DreadthFirstSearchGameLogic implements IGameLogic {
-	private int player;
+	private int playerId;
 	private int columns;
 	private int rows;
 	private int round;
@@ -15,7 +15,7 @@ public class DreadthFirstSearchGameLogic implements IGameLogic {
 		// TODO Auto-generated method stub
 		this.columns = columns;
 		this.rows = rows;
-		this.player = player;
+		playerId = player;
 		this.round = 0;
 		player1Win = new BitSet(8);
 		player2Win = new BitSet(8);
@@ -40,7 +40,7 @@ public class DreadthFirstSearchGameLogic implements IGameLogic {
 	}
 
 	@Override
-	public void insertCoin(int column, int playerID) {
+	public void insertCoin(int column, int player) {
 		for (int i = rows - 1; i >= 0; i--) {
 			if (board[i].get(column * BIT_SEQUENCE_LENGTH,
 					column * BIT_SEQUENCE_LENGTH + BIT_SEQUENCE_LENGTH)
@@ -49,16 +49,30 @@ public class DreadthFirstSearchGameLogic implements IGameLogic {
 				// 7th bit not set. if 1 7th bit set) (0 = player 0, 1 = player
 				// 1)
 				board[i].set(column * BIT_SEQUENCE_LENGTH, column
-						* BIT_SEQUENCE_LENGTH + playerID);
+						* BIT_SEQUENCE_LENGTH + player);
 				System.out.println("Round " + round);
 				round++;
 				break;
 			}
 		}
 		printBoard();
-
 		System.out.println(column);
-		System.out.println(player);
+		System.out.println(playerId);
+	}
+
+	public void insertCoin(BitSet[] state, int column, int player) {
+		for (int i = rows - 1; i >= 0; i--) {
+			if (state[i].get(column * BIT_SEQUENCE_LENGTH,
+					column * BIT_SEQUENCE_LENGTH + BIT_SEQUENCE_LENGTH)
+					.cardinality() == 0) {
+				// ex. column 3 = 3 * 2 (6th bit) to 3 * 2 + (0 or 1) + 1 (if 0
+				// 7th bit not set. if 1 7th bit set) (0 = player 0, 1 = player
+				// 1)
+				state[i].set(column * BIT_SEQUENCE_LENGTH, column
+						* BIT_SEQUENCE_LENGTH + player);
+				break;
+			}
+		}
 	}
 
 	public int getCell(int row, int column) {
@@ -72,9 +86,48 @@ public class DreadthFirstSearchGameLogic implements IGameLogic {
 
 	@Override
 	public int decideNextMove() {
-		// TODO Auto-generated method stub
+		 return nextNonFullColumn();
+		//return miniMax(board.clone(), playerId);
+		// return alphaBeta();
+		// return EvalFunc();
+	}
 
-		return doMiniMax(board);
+	private int nextNonFullColumn() {
+		int nextMove = 0;
+		for (int i = 0; i < columns - 1; i++) {
+			if (!board[0].get(i * 2)) {
+				nextMove = i;
+				break;
+			}
+		}
+		return nextMove;
+	}
+
+	private int miniMax(BitSet[] state, int player) {
+		int nextMove = 0;
+		for (int i = 0; i < columns - 1; i++) {
+			if (!state[0].get(i * 2)) {
+				nextMove = i;
+				break;
+			}
+		}
+		// isTerminalState
+		// Drawkkkk
+		// maxValue()
+		// mini
+		return 0;
+	}
+
+	private int maxValue(BitSet b) {
+		// terminal state
+		if (gameFinished() != Winner.NOT_FINISHED) {
+			// return utility(state);O
+		}
+		return 0;
+	}
+
+	private int minValue(BitSet b) {
+		return 0;
 	}
 
 	@Override
@@ -89,7 +142,6 @@ public class DreadthFirstSearchGameLogic implements IGameLogic {
 					winner = checkDiagonal();
 				}
 			}
-			;
 		}
 		// TODO Auto-generated method stub
 		// if horizontal
