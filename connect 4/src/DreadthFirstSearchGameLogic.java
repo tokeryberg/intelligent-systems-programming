@@ -49,6 +49,7 @@ public class DreadthFirstSearchGameLogic implements IGameLogic {
 				// 7th bit not set. if 1 7th bit set) (0 = player 0, 1 = player
 				// 1)
 				board[i].set(column * BIT_SEQUENCE_LENGTH, column
+
 						* BIT_SEQUENCE_LENGTH + player);
 				System.out.println("Round " + round);
 				round++;
@@ -57,7 +58,7 @@ public class DreadthFirstSearchGameLogic implements IGameLogic {
 		}
 		printBoard();
 		System.out.println(column);
-		System.out.println(playerId);
+		System.out.println(player);
 	}
 
 	public void insertCoin(BitSet[] state, int column, int player) {
@@ -154,6 +155,7 @@ public class DreadthFirstSearchGameLogic implements IGameLogic {
 		}
 		return Winner.NOT_FINISHED;
 	}
+	
 
 	private int checkVertical() {
 		BitSet r = new BitSet(8);
@@ -242,7 +244,7 @@ public class DreadthFirstSearchGameLogic implements IGameLogic {
 					BitSet result = board[row].get((column - 3) * 2,
 							column * 2 + 2);
 					result.and(player1Win);
-					if (result.equals(player1Win)) {
+					if (result.equals(player1Win)){
 						return 2;
 					} else if (result.equals(player2Win)) {
 						return 1;
