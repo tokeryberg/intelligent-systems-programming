@@ -8,7 +8,6 @@ public class Board {
 	private BitSet[] state;
 	private final int BIT_SEQUENCE_LENGTH = 2;
 	private BitSet player1Win, player2Win;
-	private Board board;
 
 	public Board(int columns, int rows) {
 		this.columns = columns;
@@ -25,7 +24,9 @@ public class Board {
 	}
 
 	public Board(Board board) {
-		this.board = board;
+		this.columns = board.columns;
+		this.columns = board.rows;
+		this.state = board.state;
 	}
 
 	public BitSet[] getResult(BitSet[] state, int player, int move) {
@@ -68,7 +69,7 @@ public class Board {
 
 	public ArrayList<Integer> getPossibleMoves(BitSet[] state) {
 		ArrayList<Integer> possibleMoves = new ArrayList<>();
-		for (int i = 0; i < columns - 1; i++) {
+		for (int i = 0; i < this.columns; i++) {
 			// check if top row is occupied
 			if (!state[0].get(i * 2)) {
 				possibleMoves.add(i);
@@ -78,13 +79,11 @@ public class Board {
 	}
 
 	public boolean isTerminal(BitSet[] state) {
-		// TODO Auto-generated method stub
-		return false;
+		return getStatus() > -1;
 	}
 
 	public int getUtilityValue(BitSet[] state, int player) {
-		// TODO Auto-generated method stub
-		return 0;
+		return 1;
 	}
 
 	public void printBoard() {
@@ -111,6 +110,7 @@ public class Board {
 			if (winner == 0) {
 				winner = checkDiagonal();
 			}
+			return winner;
 		}
 		return -1;
 	}

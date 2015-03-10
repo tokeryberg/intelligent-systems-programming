@@ -1,5 +1,3 @@
-import java.util.BitSet;
-
 public class DreadthFirstSearchGameLogic implements IGameLogic {
 	private int playerId;
 	private int round;
@@ -7,21 +5,19 @@ public class DreadthFirstSearchGameLogic implements IGameLogic {
 
 	@Override
 	public void initializeGame(int columns, int rows, int player) {
-		// TODO Auto-generated method stub
 		this.board = new Board(columns, rows);
 		this.playerId = player;
 		this.round = 0;
 		System.out.println("Initializing game with columns X rows " + columns
 				+ " X " + rows);
-		board.printBoard();
+		//board.printBoard();
 	}
 
 	@Override
 	public void insertCoin(int column, int player) {
-		System.out.println(column);
-		System.out.println(player);
 		board.setState(column, player);
-		board.printBoard();
+		round++;
+		//board.printBoard();
 	}
 
 	public int getCell(int row, int column) {
@@ -45,10 +41,11 @@ public class DreadthFirstSearchGameLogic implements IGameLogic {
 
 	@Override
 	public Winner gameFinished() {
-		if (round > 6) {
+		if (round > 4) {
 			int winner = board.getStatus();
+			System.out.println(winner);
 			if (winner == 0) {
-				return Winner.TIE;
+				//return Winner.TIE;
 			} else if (winner == 1) {
 				return Winner.PLAYER1;
 			} else if (winner == 2) {
