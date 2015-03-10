@@ -43,7 +43,6 @@ public class DreadthFirstSearchGameLogic implements IGameLogic {
 	public Winner gameFinished() {
 		if (round > 4) {
 			int winner = board.getStatus();
-			System.out.println(winner);
 			if (winner == 0) {
 				//return Winner.TIE;
 			} else if (winner == 1) {

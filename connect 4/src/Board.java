@@ -110,9 +110,8 @@ public class Board {
 			if (winner == 0) {
 				winner = checkDiagonal();
 			}
-			return winner;
 		}
-		return -1;
+		return winner;
 	}
 
 	private int checkVertical() {
@@ -142,12 +141,12 @@ public class Board {
 	}
 
 	private int checkDiagonal() {
-		for (int c = 0; c < columns; c++) {
+		for (int c = 0; c < this.columns; c++) {
 			for (int i = state.length - 4; i >= 0; i--) {
 				if (!state[i].get(c * 2)) {
 					break;
 				}
-				if (c < columns - 4) {
+				if (c <= this.columns - 4) {
 					return checkLeftToRightDiagonal(i, c);
 				} else {
 					return checkRightToLeftDiagonal(i, c);
