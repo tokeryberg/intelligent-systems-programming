@@ -10,14 +10,15 @@ public class DreadthFirstSearchGameLogic implements IGameLogic {
 		this.round = 0;
 		System.out.println("Initializing game with columns X rows " + columns
 				+ " X " + rows);
-		//board.printBoard();
+		// board.printBoard();
 	}
 
 	@Override
 	public void insertCoin(int column, int player) {
+		board.printBoard();
 		board.setState(column, player);
 		round++;
-		//board.printBoard();
+		board.printBoard();
 	}
 
 	public int getCell(int row, int column) {
@@ -41,10 +42,10 @@ public class DreadthFirstSearchGameLogic implements IGameLogic {
 
 	@Override
 	public Winner gameFinished() {
-		if (round > 4) {
+		if (round > 6) {
 			int winner = board.getStatus();
 			if (winner == 0) {
-				//return Winner.TIE;
+				// return Winner.TIE;
 			} else if (winner == 1) {
 				return Winner.PLAYER1;
 			} else if (winner == 2) {
