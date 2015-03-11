@@ -52,9 +52,9 @@ public class Board {
 				break;
 			}
 		}
-		//printBoard();
+		// printBoard();
 
-		//return state;
+		// return state;
 		return makeGameBoardClone(state);
 	}
 
@@ -104,33 +104,30 @@ public class Board {
 	public boolean isTerminal(BitSet[] state) {
 
 		return getStatus() > 0;
-		//switch (getStatus()) {
-		//case -1:
-		//	return true;
+		// switch (getStatus()) {
+		// case -1:
+		// return true;
 
-		//case 0:
-		//	return true;
+		// case 0:
+		// return true;
 
-		//case 1:
-		//	return true;
+		// case 1:
+		// return true;
 
-		//default:
-		//	return false;
-		//}
+		// default:
+		// return false;
+		// }
 	}
 
 	public int getUtilityValue(BitSet[] state, int player) {
+		printBoard();
 		int status = getStatus();
 		if (status == player) {
 			return 1;
-		} else if (status == player%2+1){
+		} else if (status == player % 2 + 1) {
 			return -1;
 		}
-		// returner negativ, hvis player ikke har et fordelagtigt træk.
-		// for (int i = 0; i < state.length; i++) {
-		// System.out.println(state[i]);
-		// }
-		 return 0;
+		return 0;
 	}
 
 	public void printBoard() {
@@ -195,14 +192,14 @@ public class Board {
 
 	private int checkDiagonal() {
 		int result = 0;
-		for (int c = 0; c < this.columns-1; c++) {
+		for (int c = 0; c < this.columns; c++) {
 			for (int i = state.length - 4; i >= 0; i--) {
 				if (!state[i].get(c * 2)) {
 					break;
 				}
-				if (c <= this.columns -4) {
+				if (c <= this.columns - 4) {
 					result = checkLeftToRightDiagonal(i, c);
-				} else if(c >= 3){
+				} else if (c >= 3) {
 					result = checkRightToLeftDiagonal(i, c);
 				}
 			}

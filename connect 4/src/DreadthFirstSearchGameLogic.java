@@ -17,6 +17,7 @@ public class DreadthFirstSearchGameLogic implements IGameLogic {
 		board.setState(column, player);
 		round++;
 		//board.printBoard();
+		System.out.println(round);
 	}
 
 	public int getCell(int row, int column) {
