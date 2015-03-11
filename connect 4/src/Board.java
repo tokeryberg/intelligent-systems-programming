@@ -28,16 +28,16 @@ public class Board {
 		player2Win.flip(5);
 		player2Win.flip(7);
 		draw.clear();
-		for (int i = 0; i < columns * 2; i++) {
-			if (i % 2 == 0)
-				draw.set(i);
-		}
+		// for (int i = 0; i < columns * 2; i++) {
+		// if (i % 2 == 0)
+		// draw.set(i);
+		// }
 	}
 
 	public Board(Board board) {
 		this.columns = board.columns;
 		this.rows = board.rows;
-		this.state = board.state;
+		this.state = makeGameBoardClone(board.state);
 		makeBitMasks();
 	}
 
@@ -52,8 +52,12 @@ public class Board {
 				break;
 			}
 		}
+		System.out.println("Player: " + player);
+		System.out.println(move);
+		//printBoard();
 
-		return state;
+		//return state;
+		return makeGameBoardClone(state);
 	}
 
 	public void setState(int move, int player) {
@@ -80,6 +84,14 @@ public class Board {
 		return b;
 	}
 
+	private BitSet[] makeGameBoardClone(BitSet[] state) {
+		BitSet[] b = new BitSet[state.length];
+		for (int i = 0; i < b.length; i++) {
+			b[i] = (BitSet) state[i].clone();
+		}
+		return b;
+	}
+
 	public ArrayList<Integer> getPossibleMoves(BitSet[] state) {
 		ArrayList<Integer> possibleMoves = new ArrayList<>();
 		for (int i = 0; i < this.columns; i++) {
@@ -92,31 +104,36 @@ public class Board {
 	}
 
 	public boolean isTerminal(BitSet[] state) {
-		
+
 		switch (getStatus()) {
-		case -1: return true;
-			
-		case 0: return true;
-			
-		case 1: return true;
-		
+		case -1:
+			return true;
+
+		case 0:
+			return true;
+
+		case 1:
+			return true;
+
 		default:
 			return false;
 		}
 	}
 
 	public int getUtilityValue(BitSet[] state, int player) {
-		//int status = getStatus();
-		//if(status == player){
-			//return 10000;
-		//} 
-		// returner negativ, hvis player ikke har et fordelagtigt træk.
-		//return -10000;
 		System.out.println("GetUtility");
-		for (int i = 0; i < state.length; i++) {
-			System.out.println(state[i]);
+		int status = getStatus();
+		System.out.println(status);
+		if (status == player) {
+			return 10000;
+		} else {
+			return -10000;
 		}
-		return 1;
+		// returner negativ, hvis player ikke har et fordelagtigt træk.
+		// for (int i = 0; i < state.length; i++) {
+		// System.out.println(state[i]);
+		// }
+		// return 1;
 	}
 
 	public void printBoard() {
@@ -136,7 +153,7 @@ public class Board {
 	}
 
 	public int getStatus() {
-		checkDraw();
+		// checkDraw();
 
 		int winner = checkHorizontal();
 		if (winner == 0) {
@@ -155,7 +172,7 @@ public class Board {
 
 	private int checkVertical() {
 		BitSet r = new BitSet(8);
-		for (int c = 0; c < columns - 1; c++) {
+		for (int c = 0; c < columns; c++) {
 			for (int i = rows - 4; i >= 0; i--) {
 				if (!state[i].get(c * 2)) {
 					break;
@@ -168,8 +185,6 @@ public class Board {
 				r.set(5, state[i + 2].get(c * 2 + 1));
 				r.set(6, state[i + 3].get(c * 2));
 				r.set(7, state[i + 3].get(c * 2 + 1));
-				if (player1Win == null)
-					System.out.println("NULL");
 				r.and(player1Win);
 				if (r.equals(player1Win)) {
 					return 2;
@@ -194,7 +209,7 @@ public class Board {
 				}
 			}
 		}
-		return 3;
+		return 0;
 	}
 
 	private int checkLeftToRightDiagonal(int row, int column) {
@@ -237,11 +252,10 @@ public class Board {
 
 	private int checkHorizontal() {
 		for (int row = rows - 1; row >= 0; row--) {
-			for (int column = 3; column < columns - 1; column++) {
+			for (int column = 3; column < columns; column++) {
 				if (state[row].get(column * 2)) {
 					BitSet result = state[row].get((column - 3) * 2,
 							column * 2 + 2);
-					System.out.println(result.toString());
 					result.and(player1Win);
 					if (result.equals(player1Win)) {
 						return 2;

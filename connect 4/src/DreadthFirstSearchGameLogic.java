@@ -10,12 +10,10 @@ public class DreadthFirstSearchGameLogic implements IGameLogic {
 		this.round = 0;
 		System.out.println("Initializing game with columns X rows " + columns
 				+ " X " + rows);
-		// board.printBoard();
 	}
 
 	@Override
 	public void insertCoin(int column, int player) {
-		board.printBoard();
 		board.setState(column, player);
 		round++;
 		board.printBoard();
