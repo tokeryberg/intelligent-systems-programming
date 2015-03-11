@@ -7,26 +7,39 @@ public class Board {
 	private int rows;
 	private BitSet[] state;
 	private final int BIT_SEQUENCE_LENGTH = 2;
-	private BitSet player1Win, player2Win;
+	private BitSet player1Win, player2Win, draw;
 
 	public Board(int columns, int rows) {
 		this.columns = columns;
 		this.rows = rows;
 		this.state = makeGameBoard(rows, columns);
+		makeBitMasks();
+			
+		
+	}
+
+	public void makeBitMasks(){
 		player1Win = new BitSet(8);
 		player2Win = new BitSet(8);
+		draw = new BitSet(columns*2);
 		player1Win.set(0, 8);
 		player2Win.set(0, 8);
 		player2Win.flip(1);
 		player2Win.flip(3);
 		player2Win.flip(5);
 		player2Win.flip(7);
+		draw.clear();
+		for (int i = 0; i < columns*2; i++) {
+			if(i%2 == 0)
+				draw.set(i);
+		}	
 	}
-
+	
 	public Board(Board board) {
 		this.columns = board.columns;
 		this.columns = board.rows;
 		this.state = board.state;
+		makeBitMasks();
 	}
 
 	public BitSet[] getResult(BitSet[] state, int player, int move) {
@@ -40,6 +53,7 @@ public class Board {
 				break;
 			}
 		}
+		
 		return state;
 	}
 
@@ -79,10 +93,25 @@ public class Board {
 	}
 
 	public boolean isTerminal(BitSet[] state) {
-		return getStatus() > -1;
+		
+		switch (getStatus()) {
+		case -1: return true;
+			
+		case 0: return true;
+			
+		case 1: return true;
+		
+		default:
+			return false;
+		}
 	}
 
 	public int getUtilityValue(BitSet[] state, int player) {
+		System.out.println("GetUtility");
+		for (int i = 0; i < state.length; i++) {
+			System.out.println(state[i]);
+		}
+		
 		return 1;
 	}
 
@@ -103,7 +132,8 @@ public class Board {
 	}
 
 	public int getStatus() {
-		// checkDraw();
+		 checkDraw();
+		
 		int winner = checkHorizontal();
 		if (winner == 0) {
 			winner = checkVertical();
@@ -114,6 +144,13 @@ public class Board {
 		return winner;
 	}
 
+	private int checkDraw(){
+		
+		
+		
+		return 0;
+	}
+	
 	private int checkVertical() {
 		BitSet r = new BitSet(8);
 		for (int c = 0; c < columns; c++) {
@@ -129,6 +166,8 @@ public class Board {
 				r.set(5, state[i + 2].get(c * 2 + 1));
 				r.set(6, state[i + 3].get(c * 2));
 				r.set(7, state[i + 3].get(c * 2 + 1));
+				if(player1Win == null)
+					System.out.println("NULL");
 				r.and(player1Win);
 				if (r.equals(player1Win)) {
 					return 2;
@@ -153,7 +192,7 @@ public class Board {
 				}
 			}
 		}
-		return 0;
+		return 3;
 	}
 
 	private int checkLeftToRightDiagonal(int row, int column) {
@@ -211,5 +250,4 @@ public class Board {
 		}
 		return 0;
 	}
-
 }
