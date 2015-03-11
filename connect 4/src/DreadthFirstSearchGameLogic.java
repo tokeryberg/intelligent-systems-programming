@@ -16,7 +16,7 @@ public class DreadthFirstSearchGameLogic implements IGameLogic {
 	public void insertCoin(int column, int player) {
 		board.setState(column, player);
 		round++;
-		board.printBoard();
+		//board.printBoard();
 	}
 
 	public int getCell(int row, int column) {
@@ -33,7 +33,7 @@ public class DreadthFirstSearchGameLogic implements IGameLogic {
 	public int decideNextMove() {
 		// return nextNonFullColumn()I;
 		Board b = new Board(board);
-		return MiniMax.miniMax(b, b.getState(), playerId);
+		return MiniMax.miniMax(b, b.getState(), playerId, 10);
 		// return alphaBeta();
 		// return EvalFunc();
 	}

@@ -3,29 +3,32 @@ import java.util.BitSet;
 public class MiniMax {
 
 	private static Board board;
-	private static int depth;
 
 	// returns column to fill
-	public static int miniMax(Board b, BitSet[] state, int player) {
-		depth = 0;
+	public static int miniMax(Board b, BitSet[] state, int player, int depth) {
 		board = b;
 		int result = 0;
-		int resultValue = Integer.MIN_VALUE;
+		int utilityValue = Integer.MIN_VALUE;
 		int nextPlayer = player % 2 + 1;
+		// for hvert move tjek value
 		for (int move : board.getPossibleMoves(state)) {
-			int value = minValue(board.getResult(state, player, move),
-					nextPlayer);
-			if (value > resultValue) {
+			int value = minValue(board.getResult(state, player, move), player, depth);
+			System.out.println(board.getResult(state, player, move).toString());
+			if (value > utilityValue) {
 				result = move;
-				resultValue = value;
+				utilityValue = value;
+				// if(utilityValue == WIN) {
+				// break;
+				// }
 			}
 		}
+		System.out.println("minimax val:" + utilityValue);
 		System.out.println("minimax move:" + result);
 		return result;
 	}
 
-	private static int maxValue(BitSet[] state, int player) {
-		if (/* board.isTerminal(state */depth == 5) {
+	private static int maxValue(BitSet[] state, int player, int depth) {
+		if (depth == 10 || board.isTerminal(state)) {
 			return board.getUtilityValue(state, player);
 		}
 		depth++;
@@ -34,18 +37,19 @@ public class MiniMax {
 		int utilityValue = Integer.MIN_VALUE;
 		int nextPlayer = player % 2 + 1;
 		for (int move : board.getPossibleMoves(state)) {
-			value = minValue(board.getResult(state, player, move), nextPlayer);
-			if (value  >utilityValue) {
+			value = minValue(board.getResult(state, player, move), nextPlayer, depth);
+			if (value > utilityValue) {
 				result = move;
 				utilityValue = value;
 				System.out.println("maxutil: " + utilityValue);
 			}
 		}
+		System.out.println("max val:" + utilityValue);
 		return result;
 	}
 
-	private static int minValue(BitSet[] state, int player) {
-		if (/* board.isTerminal(state) */depth == 5) {
+	private static int minValue(BitSet[] state, int player, int depth) {
+		if (depth == 10 || board.isTerminal(state)) {
 			System.out.println("returned");
 			return board.getUtilityValue(state, player);
 		}
@@ -54,13 +58,14 @@ public class MiniMax {
 		int utilityValue = Integer.MAX_VALUE;
 		int nextPlayer = player % 2 + 1;
 		for (int move : board.getPossibleMoves(state)) {
-			value = maxValue(board.getResult(state, player, move), nextPlayer);
+			value = maxValue(board.getResult(state, player, move), nextPlayer, depth);
 			if (value < utilityValue) {
 				result = move;
 				utilityValue = value;
 				System.out.println("minutil: " + utilityValue);
 			}
 		}
+		System.out.println("min val:" + utilityValue);
 		return result;
 	}
 }
