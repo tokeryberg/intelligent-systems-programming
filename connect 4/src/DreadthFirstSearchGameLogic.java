@@ -34,8 +34,8 @@ public class DreadthFirstSearchGameLogic implements IGameLogic {
 	public int decideNextMove() {
 		// return nextNonFullColumn()I;
 		Board b = new Board(board);
-		return MiniMax.miniMax(b, b.getState(), playerId, 10);
-		// return alphaBeta();
+		//return MiniMax.miniMax(b, b.getState(), playerId, 10);
+		return MiniMax.alphaBeta(b, b.getState(), playerId, 10);
 		// return EvalFunc();
 	}
 

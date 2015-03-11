@@ -120,7 +120,7 @@ public class Board {
 	}
 
 	public int getUtilityValue(BitSet[] state, int player) {
-		printBoard();
+		//printBoard();
 		int status = getStatus();
 		if (status == player) {
 			return 1;
