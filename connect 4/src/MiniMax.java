@@ -4,7 +4,6 @@ public class MiniMax {
 
 	private static Board board;
 	private static int depth;
-	
 	// returns column to fill
 	public static int miniMax(Board b, BitSet[] state, int player) {
 		board = b;

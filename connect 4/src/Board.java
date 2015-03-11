@@ -14,14 +14,13 @@ public class Board {
 		this.rows = rows;
 		this.state = makeGameBoard(rows, columns);
 		makeBitMasks();
-			
-		
+
 	}
 
-	public void makeBitMasks(){
+	public void makeBitMasks() {
 		player1Win = new BitSet(8);
 		player2Win = new BitSet(8);
-		draw = new BitSet(columns*2);
+		draw = new BitSet(columns * 2);
 		player1Win.set(0, 8);
 		player2Win.set(0, 8);
 		player2Win.flip(1);
@@ -29,18 +28,17 @@ public class Board {
 		player2Win.flip(5);
 		player2Win.flip(7);
 		draw.clear();
-		for (int i = 0; i < columns*2; i++) {
-			if(i%2 == 0)
+		for (int i = 0; i < columns * 2; i++) {
+			if (i % 2 == 0)
 				draw.set(i);
-		}	
+		}
 	}
-	
+
 	public Board(Board board) {
 		this.columns = board.columns;
 		this.rows = board.rows;
 		this.state = board.state;
-		this.player1Win = board.player1Win;
-		this.player2Win = board.player2Win;
+		makeBitMasks();
 	}
 
 	public BitSet[] getResult(BitSet[] state, int player, int move) {
@@ -54,6 +52,7 @@ public class Board {
 				break;
 			}
 		}
+
 		return state;
 	}
 
@@ -93,16 +92,31 @@ public class Board {
 	}
 
 	public boolean isTerminal(BitSet[] state) {
-		return getStatus() > 0;
+		
+		switch (getStatus()) {
+		case -1: return true;
+			
+		case 0: return true;
+			
+		case 1: return true;
+		
+		default:
+			return false;
+		}
 	}
 
 	public int getUtilityValue(BitSet[] state, int player) {
-		int status = getStatus();
-		if(status == player){
-			return 10000;
-		} 
+		//int status = getStatus();
+		//if(status == player){
+			//return 10000;
+		//} 
 		// returner negativ, hvis player ikke har et fordelagtigt træk.
-		return -10000;
+		//return -10000;
+		System.out.println("GetUtility");
+		for (int i = 0; i < state.length; i++) {
+			System.out.println(state[i]);
+		}
+		return 1;
 	}
 
 	public void printBoard() {
@@ -122,8 +136,8 @@ public class Board {
 	}
 
 	public int getStatus() {
-		 checkDraw();
-		
+		checkDraw();
+
 		int winner = checkHorizontal();
 		if (winner == 0) {
 			winner = checkVertical();
@@ -134,16 +148,14 @@ public class Board {
 		return winner;
 	}
 
-	private int checkDraw(){
-		
-		
-		
+	private int checkDraw() {
+
 		return 0;
 	}
-	
+
 	private int checkVertical() {
 		BitSet r = new BitSet(8);
-		for (int c = 0; c < columns-1; c++) {
+		for (int c = 0; c < columns - 1; c++) {
 			for (int i = rows - 4; i >= 0; i--) {
 				if (!state[i].get(c * 2)) {
 					break;
@@ -156,7 +168,7 @@ public class Board {
 				r.set(5, state[i + 2].get(c * 2 + 1));
 				r.set(6, state[i + 3].get(c * 2));
 				r.set(7, state[i + 3].get(c * 2 + 1));
-				if(player1Win == null)
+				if (player1Win == null)
 					System.out.println("NULL");
 				r.and(player1Win);
 				if (r.equals(player1Win)) {
@@ -225,7 +237,7 @@ public class Board {
 
 	private int checkHorizontal() {
 		for (int row = rows - 1; row >= 0; row--) {
-			for (int column = 3; column < columns-1; column++) {
+			for (int column = 3; column < columns - 1; column++) {
 				if (state[row].get(column * 2)) {
 					BitSet result = state[row].get((column - 3) * 2,
 							column * 2 + 2);
@@ -241,5 +253,4 @@ public class Board {
 		}
 		return 0;
 	}
-
 }
