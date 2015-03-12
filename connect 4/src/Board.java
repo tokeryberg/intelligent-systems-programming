@@ -3,7 +3,7 @@ import java.util.BitSet;
 
 public class Board {
 
-	private static final int[] MOVE_VALUE = { 0, 10, 100, 1000, 10000 };
+	private static final int[] MOVE_VALUE = { 0, 10, 100, 1000, 100000 };
 	private int columns;
 	private int rows;
 	private BitSet[] state;
@@ -24,12 +24,12 @@ public class Board {
 		player1Win = new BitSet(8);
 		player2Win = new BitSet(8);
 		draw = new BitSet(columns * 2);
-		player1Win.set(0, 8);
 		player2Win.set(0, 8);
-		player2Win.flip(1);
-		player2Win.flip(3);
-		player2Win.flip(5);
-		player2Win.flip(7);
+		player1Win.set(0, 8);
+		player1Win.flip(1);
+		player1Win.flip(3);
+		player1Win.flip(5);
+		player1Win.flip(7);
 		players[0] = player1Win;
 		players[1] = player2Win;
 		draw.clear();
@@ -65,7 +65,7 @@ public class Board {
 
 	public BitSet[] undoMove(BitSet[] state, int player, int move) {
 		// find next row to fill
-		for (int i = 0;  i < this.rows; i++) {
+		for (int i = 0; i < this.rows; i++) {
 			if (state[i].get(move * BIT_SEQUENCE_LENGTH,
 					move * BIT_SEQUENCE_LENGTH + BIT_SEQUENCE_LENGTH)
 					.cardinality() != 0) {
@@ -124,7 +124,7 @@ public class Board {
 	}
 
 	public boolean isTerminal(BitSet[] state) {
-
+		// printBoard();
 		return getStatus() > 0;
 		// switch (getStatus()) {
 		// case -1:
@@ -143,8 +143,12 @@ public class Board {
 
 	public int getUtilityValue(BitSet[] state, int player, boolean isMaximizing) {
 		// printBoard();
-		int utilityValue = 0;
-		utilityValue = checkHorizontalUtility(state, player);
+		int horizontalUtilityValue = checkHorizontalUtility(state, player);
+		int verticalUtitlityValue = checkVerticalUtility(state, player);
+		int diagonalUtilityValue = checkDiagonalUtility(state, player);
+		int utilityValue = Math.max(horizontalUtilityValue,
+				verticalUtitlityValue);
+		utilityValue = Math.max(utilityValue, diagonalUtilityValue);
 		if (!isMaximizing) {
 			utilityValue = utilityValue * -1;
 		}
@@ -159,42 +163,212 @@ public class Board {
 	}
 
 	private int checkHorizontalUtility(BitSet[] state, int player) {
+		BitSet result = new BitSet(8);
 		for (int row = rows - 1; row >= 0; row--) {
 			for (int column = 0; column < columns; column++) {
-				if (state[row].get(column * 2)) {
-					BitSet result = state[row]
-							.get((column) * 2, column * 2 + 8);
-					// win
-					// System.out.println(result.toString());
-					result.and(players[player-1]);
-					if (result.equals(players[player - 1])) {
-						return MOVE_VALUE[4];
-					}
-					// 3 på stribe og en tom
-					BitSet leftEmpty = players[player - 1].get(0, 8);
-					leftEmpty.clear(0, 2);
-					BitSet rightEmpty = players[player - 1].get(0, 8);
-					rightEmpty.clear(6, 8);
-					// System.out.println("------------------");
-					// System.out.println(leftEmpty.toString());
-					// System.out.println(rightEmpty.toString());
-					// System.out.println(result.toString());
-					if (result.equals(leftEmpty) || result.equals(rightEmpty)) {
-						return MOVE_VALUE[3];
-					}
-					// 2 på stribe og to tomme
-					// if (result.get(0, 4).equals(players[player - 1].get(0,
-					// 4))
-					// || result.get(2, 6).equals(
-					// players[player - 1].get(2, 6))
-					// || result.get(4, 8).equals(
-					// players[player - 1].get(4, 8))) {
-					// return MOVE_VALUE[2];
-					// }
+				if (column + 4 > columns) {
+					break;
+				}
+				result = state[row].get(column * 2, column * 2 + 8);
+				// win
+				// result.and(players[player - 1]);
+				if (result.equals(players[player - 1])) {
+					return MOVE_VALUE[4];
+				}
+				// 3 på stribe og en tom
+				BitSet threeLeftEmpty = players[player - 1].get(0, 8);
+				threeLeftEmpty.clear(0, 2);
+				BitSet threeRightEmpty = players[player - 1].get(0, 8);
+				threeRightEmpty.clear(6, 8);
+				BitSet threeLeftDisjoint = players[player - 1].get(0, 8);
+				threeLeftDisjoint.clear(2, 4);
+				BitSet threeRightDisjoint = players[player - 1].get(0, 8);
+				threeRightDisjoint.clear(4, 6);
+
+				if (result.equals(threeLeftEmpty)
+						|| result.equals(threeRightEmpty)
+						|| result.equals(threeLeftDisjoint)
+						|| result.equals(threeRightDisjoint)) {
+					return MOVE_VALUE[3];
+				}
+				// 2 på stribe og to tomme
+				BitSet twoLeftEmpty = players[player - 1].get(0, 8);
+				twoLeftEmpty.clear(0, 4);
+				BitSet twoRightEmpty = players[player - 1].get(0, 8);
+				twoRightEmpty.clear(4, 8);
+				BitSet twoLeftRightEmpty = players[player - 1].get(0, 8);
+				twoLeftRightEmpty.clear(0, 2);
+				twoLeftRightEmpty.clear(6, 8);
+				BitSet twoMiddleEmpty = players[player - 1].get(0, 8);
+				twoMiddleEmpty.clear(2, 6);
+				if (result.equals(twoLeftEmpty) || result.equals(twoRightEmpty)
+						|| result.equals(twoLeftRightEmpty)
+						|| result.equals(twoMiddleEmpty)) {
+
+					return MOVE_VALUE[2];
+				}
+
+				// 1 på stribe
+				BitSet oneLeft = players[player - 1].get(0, 8);
+				oneLeft.clear(2, 8);
+				BitSet oneRight = players[player - 1].get(0, 8);
+				oneRight.clear(0, 6);
+				BitSet oneLeftMiddle = players[player - 1].get(0, 8);
+				oneLeftMiddle.clear(0, 2);
+				oneLeftMiddle.clear(4, 8);
+				BitSet oneRightMiddle = players[player - 1].get(0, 8);
+				oneRightMiddle.clear(0, 4);
+				oneRightMiddle.clear(6, 8);
+				if (result.equals(oneLeft) || result.equals(oneRight)
+						|| result.equals(oneLeftMiddle)
+						|| result.equals(oneRightMiddle)) {
+					return MOVE_VALUE[1];
 				}
 			}
 		}
-		return 0;
+		return MOVE_VALUE[0];
+	}
+
+	private int checkVerticalUtility(BitSet[] state, int player) {
+		BitSet r = new BitSet(8);
+		for (int c = 0; c < columns; c++) {
+			for (int ro = rows - 1; ro >= 0; ro--) {
+				if (ro - 3 < 0)
+					break;
+				r.set(0, state[ro].get(c * 2));
+				r.set(1, state[ro].get(c * 2 + 1));
+				r.set(2, state[ro - 1].get(c * 2));
+				r.set(3, state[ro - 1].get(c * 2 + 1));
+				r.set(4, state[ro - 2].get(c * 2));
+				r.set(5, state[ro - 2].get(c * 2 + 1));
+				r.set(6, state[ro - 3].get(c * 2));
+				r.set(7, state[ro - 3].get(c * 2 + 1));
+				// r.and(players[player - 1]);
+				if (r.equals(players[player - 1])) {
+					return MOVE_VALUE[4];
+				}
+
+				BitSet oneVertical = players[player - 1].get(0, 8);
+				oneVertical.clear(2, 8);
+				if (oneVertical.equals(r)) {
+					return MOVE_VALUE[1];
+				}
+
+				BitSet twoVertical = players[player - 1].get(0, 8);
+				twoVertical.clear(4, 8);
+				if (twoVertical.equals(r)) {
+					return MOVE_VALUE[2];
+				}
+
+				BitSet threeVertical = players[player - 1].get(0, 8);
+				threeVertical.clear(6, 8);
+				if (threeVertical.equals(r)) {
+					return MOVE_VALUE[3];
+				}
+			}
+		}
+		return MOVE_VALUE[0];
+	}
+
+	private int checkDiagonalUtility(BitSet[] state, int player) {
+		int result = 0;
+		for (int c = 0; c < this.columns; c++) {
+			for (int i = state.length - 1; i >= 0; i--) {
+				if (!(i - 3 < 0)) {
+					if (c < 3) {
+						result = rightUp(i, c, player);
+					} else if (c + 4 > columns) {
+						result = leftUp(i, c, player);
+					} else {
+						result = Math.max(rightUp(i, c, player), leftUp(i, c, player));
+					}
+				}
+			}
+		}
+		return result;
+	}
+
+	private int rightUp(int row, int column, int player) {
+		BitSet r = new BitSet(8);
+		r.set(0, state[row].get(column * 2));
+		r.set(1, state[row].get(column * 2 + 1));
+		r.set(2, state[row - 1].get(column * 2 + 2));
+		r.set(3, state[row - 1].get(column * 2 + 3));
+		r.set(4, state[row - 2].get(column * 2 + 4));
+		r.set(5, state[row - 2].get(column * 2 + 5));
+		r.set(6, state[row - 3].get(column * 2 + 6));
+		r.set(7, state[row - 3].get(column * 2 + 7));
+
+		return getDiagonalUtility(r, player);
+	}
+
+	private int leftUp(int row, int column, int player) {
+		BitSet r = new BitSet(8);
+		r.set(0, state[row].get(column * 2));
+		r.set(1, state[row].get(column * 2 + 1));
+		r.set(2, state[row - 1].get(column * 2 - 2));
+		r.set(3, state[row - 1].get(column * 2 - 1));
+		r.set(4, state[row - 2].get(column * 2 - 4));
+		r.set(5, state[row - 2].get(column * 2 - 3));
+		r.set(6, state[row - 3].get(column * 2 - 6));
+		r.set(7, state[row - 3].get(column * 2 - 5));
+
+		return getDiagonalUtility(r, player);
+	}
+
+	private int getDiagonalUtility(BitSet result, int player) {
+		if (result.equals(players[player - 1])) {
+			return MOVE_VALUE[4];
+		}
+		// 3 på stribe og en tom
+		BitSet threeLeftEmpty = players[player - 1].get(0, 8);
+		threeLeftEmpty.clear(0, 2);
+		BitSet threeRightEmpty = players[player - 1].get(0, 8);
+		threeRightEmpty.clear(6, 8);
+		BitSet threeLeftDisjoint = players[player - 1].get(0, 8);
+		threeLeftDisjoint.clear(2, 4);
+		BitSet threeRightDisjoint = players[player - 1].get(0, 8);
+		threeRightDisjoint.clear(4, 6);
+
+		if (result.equals(threeLeftEmpty) || result.equals(threeRightEmpty)
+				|| result.equals(threeLeftDisjoint)
+				|| result.equals(threeRightDisjoint)) {
+			return MOVE_VALUE[3];
+		}
+		// 2 på stribe og to tomme
+		BitSet twoLeftEmpty = players[player - 1].get(0, 8);
+		twoLeftEmpty.clear(0, 4);
+		BitSet twoRightEmpty = players[player - 1].get(0, 8);
+		twoRightEmpty.clear(4, 8);
+		BitSet twoLeftRightEmpty = players[player - 1].get(0, 8);
+		twoLeftRightEmpty.clear(0, 2);
+		twoLeftRightEmpty.clear(6, 8);
+		BitSet twoMiddleEmpty = players[player - 1].get(0, 8);
+		twoMiddleEmpty.clear(2, 6);
+		if (result.equals(twoLeftEmpty) || result.equals(twoRightEmpty)
+				|| result.equals(twoLeftRightEmpty)
+				|| result.equals(twoMiddleEmpty)) {
+
+			return MOVE_VALUE[2];
+		}
+
+		// 1 på stribe
+		BitSet oneLeft = players[player - 1].get(0, 8);
+		oneLeft.clear(2, 8);
+		BitSet oneRight = players[player - 1].get(0, 8);
+		oneRight.clear(0, 6);
+		BitSet oneLeftMiddle = players[player - 1].get(0, 8);
+		oneLeftMiddle.clear(0, 2);
+		oneLeftMiddle.clear(4, 8);
+		BitSet oneRightMiddle = players[player - 1].get(0, 8);
+		oneRightMiddle.clear(0, 4);
+		oneRightMiddle.clear(6, 8);
+		if (result.equals(oneLeft) || result.equals(oneRight)
+				|| result.equals(oneLeftMiddle)
+				|| result.equals(oneRightMiddle)) {
+			return MOVE_VALUE[1];
+		}
+		return MOVE_VALUE[0];
 	}
 
 	public void printBoard() {
@@ -214,20 +388,30 @@ public class Board {
 	}
 
 	public int getStatus() {
-		// checkDraw();
-
 		int winner = checkHorizontal();
 		if (winner == 0) {
 			winner = checkVertical();
 			if (winner == 0) {
 				winner = checkDiagonal();
+				if (winner == 0) {
+					winner = checkDraw();
+				}
 			}
+
 		}
 		return winner;
 	}
 
 	private int checkDraw() {
-
+		int filledColumns = 0;
+		for (int i = 0; i < columns; i++) {
+			if (state[0].get(i * 2)) {
+				filledColumns++;
+			}
+		}
+		if (filledColumns == columns) {
+			return 3;
+		}
 		return 0;
 	}
 
@@ -246,10 +430,10 @@ public class Board {
 				r.set(5, state[i + 2].get(c * 2 + 1));
 				r.set(6, state[i + 3].get(c * 2));
 				r.set(7, state[i + 3].get(c * 2 + 1));
-				r.and(player1Win);
-				if (r.equals(player1Win)) {
+				// r.and(player1Win);
+				if (r.equals(player2Win)) {
 					return 2;
-				} else if (r.equals(player2Win)) {
+				} else if (r.equals(player1Win)) {
 					return 1;
 				}
 			}
@@ -264,10 +448,12 @@ public class Board {
 				if (!state[i].get(c * 2)) {
 					break;
 				}
-				if (c <= this.columns - 4) {
+				if (c < 3) {
 					result = checkLeftToRightDiagonal(i, c);
-				} else if (c >= 3) {
+				} else if (c > columns - 4) {
 					result = checkRightToLeftDiagonal(i, c);
+				} else {
+					result = Math.max(checkLeftToRightDiagonal(i, c), checkRightToLeftDiagonal(i, c));
 				}
 			}
 		}
@@ -284,10 +470,9 @@ public class Board {
 		r.set(5, state[row + 2].get(column * 2 + 5));
 		r.set(6, state[row + 3].get(column * 2 + 6));
 		r.set(7, state[row + 3].get(column * 2 + 7));
-		r.and(player1Win);
-		if (r.equals(player1Win)) {
+		if (r.equals(player2Win)) {
 			return 2;
-		} else if (r.equals(player2Win)) {
+		} else if (r.equals(player1Win)) {
 			return 1;
 		}
 		return 0;
@@ -303,10 +488,9 @@ public class Board {
 		r.set(5, state[row + 2].get(column * 2 - 3));
 		r.set(6, state[row + 3].get(column * 2 - 6));
 		r.set(7, state[row + 3].get(column * 2 - 5));
-		r.and(player1Win);
-		if (r.equals(player1Win)) {
+		if (r.equals(player2Win)) {
 			return 2;
-		} else if (r.equals(player2Win)) {
+		} else if (r.equals(player1Win)) {
 			return 1;
 		}
 		return 0;
@@ -318,10 +502,9 @@ public class Board {
 				if (state[row].get(column * 2)) {
 					BitSet result = state[row].get((column - 3) * 2,
 							column * 2 + 2);
-					result.and(player1Win);
-					if (result.equals(player1Win)) {
+					if (result.equals(player2Win)) {
 						return 2;
-					} else if (result.equals(player2Win)) {
+					} else if (result.equals(player1Win)) {
 						return 1;
 					}
 				}

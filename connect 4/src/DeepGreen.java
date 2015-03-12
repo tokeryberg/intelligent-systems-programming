@@ -1,4 +1,4 @@
-public class DreadthFirstSearchGameLogic implements IGameLogic {
+public class DeepGreen implements IGameLogic {
 	private int playerId;
 	private int round;
 	private Board board;
@@ -16,8 +16,6 @@ public class DreadthFirstSearchGameLogic implements IGameLogic {
 	public void insertCoin(int column, int player) {
 		board.setState(column, player);
 		round++;
-		//board.printBoard();
-		System.out.println(round);
 	}
 
 	public int getCell(int row, int column) {
@@ -32,19 +30,15 @@ public class DreadthFirstSearchGameLogic implements IGameLogic {
 
 	@Override
 	public int decideNextMove() {
-		// return nextNonFullColumn()I;
-		Board b = new Board(board);
-		//return MiniMax.miniMax(b, b.getState(), playerId, 10);
-		return MiniMax.alphaBeta(b, b.getState(), playerId, 0);
-		// return EvalFunc();
+		return Move.decideMove(board, board.getState(), playerId, 8, round);
 	}
 
 	@Override
 	public Winner gameFinished() {
 		if (round > 6) {
 			int winner = board.getStatus();
-			if (winner == 0) {
-				// return Winner.TIE;
+			if (winner == 3) {
+				return Winner.TIE;
 			} else if (winner == 1) {
 				return Winner.PLAYER1;
 			} else if (winner == 2) {
