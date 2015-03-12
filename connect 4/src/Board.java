@@ -201,9 +201,17 @@ public class Board {
 				twoLeftRightEmpty.clear(6, 8);
 				BitSet twoMiddleEmpty = players[player - 1].get(0, 8);
 				twoMiddleEmpty.clear(2, 6);
+				BitSet leftEmptyMiddleEmpty = players[player - 1].get(0, 8);
+				leftEmptyMiddleEmpty.clear(0, 2);
+				leftEmptyMiddleEmpty.clear(4, 6);
+				BitSet rightEmptyMiddleEmpty = players[player - 1].get(0, 8);
+				rightEmptyMiddleEmpty.clear(2, 4);
+				rightEmptyMiddleEmpty.clear(6, 8);
 				if (result.equals(twoLeftEmpty) || result.equals(twoRightEmpty)
 						|| result.equals(twoLeftRightEmpty)
-						|| result.equals(twoMiddleEmpty)) {
+						|| result.equals(twoMiddleEmpty)
+						|| result.equals(leftEmptyMiddleEmpty)
+						|| result.equals(rightEmptyMiddleEmpty)) {
 
 					return MOVE_VALUE[2];
 				}
@@ -280,7 +288,8 @@ public class Board {
 					} else if (c + 4 > columns) {
 						result = leftUp(i, c, player);
 					} else {
-						result = Math.max(rightUp(i, c, player), leftUp(i, c, player));
+						result = Math.max(rightUp(i, c, player),
+								leftUp(i, c, player));
 					}
 				}
 			}
@@ -345,9 +354,17 @@ public class Board {
 		twoLeftRightEmpty.clear(6, 8);
 		BitSet twoMiddleEmpty = players[player - 1].get(0, 8);
 		twoMiddleEmpty.clear(2, 6);
+		BitSet leftEmptyMiddleEmpty = players[player - 1].get(0, 8);
+		leftEmptyMiddleEmpty.clear(0, 2);
+		leftEmptyMiddleEmpty.clear(4, 6);
+		BitSet rightEmptyMiddleEmpty = players[player - 1].get(0, 8);
+		rightEmptyMiddleEmpty.clear(2, 4);
+		rightEmptyMiddleEmpty.clear(6, 8);
 		if (result.equals(twoLeftEmpty) || result.equals(twoRightEmpty)
 				|| result.equals(twoLeftRightEmpty)
-				|| result.equals(twoMiddleEmpty)) {
+				|| result.equals(twoMiddleEmpty)
+				|| result.equals(leftEmptyMiddleEmpty)
+				|| result.equals(rightEmptyMiddleEmpty)) {
 
 			return MOVE_VALUE[2];
 		}
@@ -453,7 +470,8 @@ public class Board {
 				} else if (c > columns - 4) {
 					result = checkRightToLeftDiagonal(i, c);
 				} else {
-					result = Math.max(checkLeftToRightDiagonal(i, c), checkRightToLeftDiagonal(i, c));
+					result = Math.max(checkLeftToRightDiagonal(i, c),
+							checkRightToLeftDiagonal(i, c));
 				}
 			}
 		}
