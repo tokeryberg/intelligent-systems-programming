@@ -3,11 +3,13 @@ import java.util.BitSet;
 
 public class Board {
 
+	private static final int[] MOVE_VALUE = { 0, 10, 100, 1000, 10000 };
 	private int columns;
 	private int rows;
 	private BitSet[] state;
 	private final int BIT_SEQUENCE_LENGTH = 2;
 	private BitSet player1Win, player2Win, draw;
+	private BitSet[] players;
 
 	public Board(int columns, int rows) {
 		this.columns = columns;
@@ -18,6 +20,7 @@ public class Board {
 	}
 
 	public void makeBitMasks() {
+		players = new BitSet[2];
 		player1Win = new BitSet(8);
 		player2Win = new BitSet(8);
 		draw = new BitSet(columns * 2);
@@ -27,6 +30,8 @@ public class Board {
 		player2Win.flip(3);
 		player2Win.flip(5);
 		player2Win.flip(7);
+		players[0] = player1Win;
+		players[1] = player2Win;
 		draw.clear();
 		// for (int i = 0; i < columns * 2; i++) {
 		// if (i % 2 == 0)
@@ -49,6 +54,23 @@ public class Board {
 					.cardinality() == 0) {
 				state[i].set(move * BIT_SEQUENCE_LENGTH, move
 						* BIT_SEQUENCE_LENGTH + player);
+				break;
+			}
+		}
+		// printBoard();
+
+		// return state;
+		return makeGameBoardClone(state);
+	}
+
+	public BitSet[] undoMove(BitSet[] state, int player, int move) {
+		// find next row to fill
+		for (int i = 0;  i < this.rows; i++) {
+			if (state[i].get(move * BIT_SEQUENCE_LENGTH,
+					move * BIT_SEQUENCE_LENGTH + BIT_SEQUENCE_LENGTH)
+					.cardinality() != 0) {
+				state[i].set(move * BIT_SEQUENCE_LENGTH, move
+						* BIT_SEQUENCE_LENGTH + player, false);
 				break;
 			}
 		}
@@ -119,13 +141,58 @@ public class Board {
 		// }
 	}
 
-	public int getUtilityValue(BitSet[] state, int player) {
-		//printBoard();
-		int status = getStatus();
-		if (status == player) {
-			return 1;
-		} else if (status == player % 2 + 1) {
-			return -1;
+	public int getUtilityValue(BitSet[] state, int player, boolean isMaximizing) {
+		// printBoard();
+		int utilityValue = 0;
+		utilityValue = checkHorizontalUtility(state, player);
+		if (!isMaximizing) {
+			utilityValue = utilityValue * -1;
+		}
+		return utilityValue;
+		// int status = getStatus();
+		// if (status == player) {
+		// return 1;
+		// } else if (status == player % 2 + 1) {
+		// return -1;
+		// }
+		// return 0;
+	}
+
+	private int checkHorizontalUtility(BitSet[] state, int player) {
+		for (int row = rows - 1; row >= 0; row--) {
+			for (int column = 0; column < columns; column++) {
+				if (state[row].get(column * 2)) {
+					BitSet result = state[row]
+							.get((column) * 2, column * 2 + 8);
+					// win
+					// System.out.println(result.toString());
+					result.and(players[player-1]);
+					if (result.equals(players[player - 1])) {
+						return MOVE_VALUE[4];
+					}
+					// 3 på stribe og en tom
+					BitSet leftEmpty = players[player - 1].get(0, 8);
+					leftEmpty.clear(0, 2);
+					BitSet rightEmpty = players[player - 1].get(0, 8);
+					rightEmpty.clear(6, 8);
+					// System.out.println("------------------");
+					// System.out.println(leftEmpty.toString());
+					// System.out.println(rightEmpty.toString());
+					// System.out.println(result.toString());
+					if (result.equals(leftEmpty) || result.equals(rightEmpty)) {
+						return MOVE_VALUE[3];
+					}
+					// 2 på stribe og to tomme
+					// if (result.get(0, 4).equals(players[player - 1].get(0,
+					// 4))
+					// || result.get(2, 6).equals(
+					// players[player - 1].get(2, 6))
+					// || result.get(4, 8).equals(
+					// players[player - 1].get(4, 8))) {
+					// return MOVE_VALUE[2];
+					// }
+				}
+			}
 		}
 		return 0;
 	}
